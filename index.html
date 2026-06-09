@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Shabu Skill Assessment Dashboard V5.1</title>
+<title>Shabu Skill Assessment Dashboard V6</title>
 <style>
 /* =========================================
    ส่วนที่ 1: ตั้งค่ารูปภาพ (Local Files)
@@ -11,21 +11,18 @@
 :root {
   --img-pot: url('Pot.png'); 
   
-  /* ภาพเนื้อวัว 5 ระดับ */
   --img-beef-raw: url('MeatRaw.png');
   --img-beef-rare: url('MeatRare.png');
   --img-beef-med: url('MeatGood.png');
   --img-beef-well: url('MeatWell.png');  
   --img-beef-over: url('MeatOver.png');
 
-  /* ภาพหมู 5 ระดับ */
   --img-pork-raw: url('PorkRaw.png');
   --img-pork-rare: url('PorkRare.png');
   --img-pork-good: url('PorkGood.png');
   --img-pork-well: url('PorkWell.png');
   --img-pork-over: url('PorkOver.png');
 
-  /* ภาพกุ้ง 5 ระดับ */
   --img-shrimp-raw: url('ShrimpRaw.png');
   --img-shrimp-rare: url('ShrimpRare.png');
   --img-shrimp-good: url('ShrimpGood.png');
@@ -40,17 +37,23 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #e9ecef; ma
 .dashboard { width: 1150px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: grid; grid-template-columns: 280px 1fr 260px; gap: 20px; }
 
 .header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 15px 20px; border-radius: 8px; }
-.target-box { font-size: 1.2em; font-weight: bold; color: #f1c40f; }
-.score-box { font-size: 1.5em; font-weight: bold; }
+.target-box { font-size: 1.2em; font-weight: bold; color: #f1c40f; flex: 1; }
+.timer-box { font-size: 1.5em; font-weight: bold; background: #fff; padding: 5px 20px; border-radius: 8px; text-align: center; margin: 0 20px; }
+.score-box { font-size: 1.5em; font-weight: bold; flex: 1; text-align: right; }
 
 .panel-left, .panel-right { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; }
 h3 { margin-top: 0; color: #343a40; font-size: 1.1em; border-bottom: 2px solid #dee2e6; padding-bottom: 5px; }
+
+/* ปุ่มเลือกโหมด */
+.mode-btn { flex: 1; padding: 10px 5px; background: #bdc3c7; color: #2c3e50; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 0.9em; }
+.mode-btn:hover { background: #95a5a6; color: white; }
+.mode-btn.active { background: #2980b9; color: white; }
+.mode-btn.exam-mode { background: #d35400; color: white; }
+.mode-btn.challenge-mode { background: #8e44ad; color: white; }
+
 .btn-group button { display: block; width: 100%; padding: 12px; margin-bottom: 8px; font-size: 0.95em; cursor: pointer; border: none; border-radius: 5px; background: #e0e0e0; transition: 0.2s; font-weight: bold; }
 .btn-group button:hover { background: #d0d0d0; }
 .btn-group button.active { background: #e74c3c; color: white; }
-
-.toggle-btn { width: 100%; padding: 10px; margin-bottom: 15px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-.toggle-btn.exam-mode { background: #e67e22; }
 
 .info-display { margin-bottom: 15px; padding: 15px; background: #fff; border-radius: 5px; border: 1px dashed #ccc; transition: 0.3s; font-size: 0.95em; line-height: 1.5; }
 
@@ -82,20 +85,78 @@ h3 { margin-top: 0; color: #343a40; font-size: 1.1em; border-bottom: 2px solid #
 .log-item.partial { border-left: 4px solid #3498db; background: #ebf5fb; }
 .log-item.over { border-left: 4px solid #f39c12; background: #fef5e7; }
 .log-item.raw { border-left: 4px solid #e74c3c; background: #fdedec; }
+
+/* =========================================
+   ส่วนที่ 3: Loading Screen
+   ========================================= */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  background-color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.8s ease-out;
+  color: #fff;
+}
+
+.loading-title {
+  font-size: 3.5em;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.loading-slogan {
+  font-size: 1.2em;
+  color: #bdc3c7;
+  margin-bottom: 40px;
+  font-style: italic;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #2c3e50;
+  border-top: 5px solid #e74c3c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 </head>
 <body>
 
+<div id="loading-screen">
+  <div class="loading-title">Shabu Simulator</div>
+  <div class="loading-slogan" id="loading-slogan">กำลังอุ่นหม้อ...</div>
+  <div class="loading-spinner"></div>
+</div>
+
 <div class="dashboard">
   <div class="header">
-    <div class="target-box">ออร์เดอร์ปัจจุบัน: <span id="current-target" style="color:#fff;">รอรับออร์เดอร์...</span></div>
+    <div class="target-box">ออร์เดอร์: <span id="current-target" style="color:#fff;">รอรับออร์เดอร์...</span></div>
+    <div class="timer-box" id="timer-display" style="display:none; color: #2c3e50;"></div>
     <div class="score-box">คะแนนรวม: <span id="total-score">0</span></div>
   </div>
 
   <div class="panel-left">
-    <h3>การควบคุมอุณหภูมิ</h3>
-    
-    <button class="toggle-btn" id="btn-toggle-mode" onclick="toggleMode()">สถานะ: โหมดเรียนรู้ (แสดงข้อมูล)</button>
+    <h3>เลือกโหมดจำลอง</h3>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <button class="mode-btn active" id="btn-mode-training" onclick="setMode('training')">ฝึกหัด</button>
+        <button class="mode-btn" id="btn-mode-exam" onclick="setMode('exam')">ประเมิน</button>
+        <button class="mode-btn" id="btn-mode-challenge" onclick="setMode('challenge')">ท้าทาย(90s)</button>
+    </div>
     
     <div class="info-display" id="info-display">
       <b>วิทยาศาสตร์ความร้อน:</b><br>
@@ -140,22 +201,53 @@ h3 { margin-top: 0; color: #343a40; font-size: 1.1em; border-bottom: 2px solid #
 </div>
 
 <script>
-
-const preloadImagesList = [
-  'Pot.png',
-  'MeatRaw.png', 'MeatRare.png', 'MeatGood.png', 'MeatWell.png', 'MeatOver.png',
-  'PorkRaw.png', 'PorkRare.png', 'PorkGood.png', 'PorkWell.png', 'PorkOver.png',
-  'ShrimpRaw.png', 'ShrimpRare.png', 'ShrimpGood.png', 'ShrimpWell.png', 'ShrimpOver.png'
+// =========================================
+// Loading Screen & Preload Logic
+// =========================================
+const snarkySlogans = [
+  "May the fat be with you. (ขอไขมันจงสถิตอยู่กับท่าน)",
+  "Diet starts tomorrow... or maybe next year.",
+  "กำลังคำนวณแคลอรี่... เอ๊ะ ช่างมันเถอะ",
+  "Warning: High cholesterol approaching.",
+  "ลวกหมูไม่สุก ระวังทรงหยอดน้ำเกลือ",
+  "อย่ามัวแต่ดูหน้าจอ ระวังเพื่อนแย่งเนื้อในหม้อของจริง",
+  "กินคาวไม่กินหวาน สันดานไพร่... แต่ถ้ากินชาบูไหม้ คือคนทำอาหารไม่เป็น"
 ];
-preloadImagesList.forEach(src => {
-  const img = new Image();
-  img.src = src;
+
+document.getElementById('loading-slogan').innerText = snarkySlogans[Math.floor(Math.random() * snarkySlogans.length)];
+
+window.addEventListener('load', () => {
+  const preloadImagesList = [
+    'Pot.png',
+    'MeatRaw.png', 'MeatRare.png', 'MeatGood.png', 'MeatWell.png', 'MeatOver.png',
+    'PorkRaw.png', 'PorkRare.png', 'PorkGood.png', 'PorkWell.png', 'PorkOver.png',
+    'ShrimpRaw.png', 'ShrimpRare.png', 'ShrimpGood.png', 'ShrimpWell.png', 'ShrimpOver.png'
+  ];
+  
+  preloadImagesList.forEach(src => { 
+    const img = new Image(); 
+    img.src = src; 
+  });
+
+  setTimeout(() => {
+    const loader = document.getElementById('loading-screen');
+    loader.style.opacity = '0';
+    setTimeout(() => { loader.style.display = 'none'; }, 800); 
+  }, 5000);
 });
 
+// =========================================
+// Application Logic
+// =========================================
 let temp = 32.0;
 let power = 0;
 let score = 0;
-let isExamMode = false;
+let currentMode = 'training';
+let canInteract = true;
+
+let challengeTimer = null;
+let prepTimer = null;
+let timeRemaining = 0;
 
 let activeFood = null; 
 let activeFoodName = '';
@@ -175,25 +267,94 @@ function init() {
   setInterval(physicsLoop, 100); 
 }
 
-function toggleMode() {
-  isExamMode = !isExamMode;
-  let btn = document.getElementById('btn-toggle-mode');
-  let info = document.getElementById('info-display');
-  let meatTemp = document.getElementById('meat-temp-box');
+function resetPot() {
+  temp = 32.0;
+  power = 0;
+  score = 0;
+  activeFood = null;
+  foodInternalTemp = 32.0;
   
-  if (isExamMode) {
-    btn.innerText = 'สถานะ: โหมดประเมิน (ซ่อนข้อมูล)';
-    btn.classList.add('exam-mode');
-    info.style.display = 'none';
-    meatTemp.style.display = 'none'; // ซ่อนอุณหภูมิแกนกลางเนื้อทันทีเมื่อเข้าโหมดประเมิน
-  } else {
-    btn.innerText = 'สถานะ: โหมดเรียนรู้ (แสดงข้อมูล)';
-    btn.classList.remove('exam-mode');
-    info.style.display = 'block';
-    if (activeFood) {
-      meatTemp.style.display = 'block'; // แสดงอุณหภูมิแกนกลางเนื้อหากมีวัตถุดิบอยู่ในหม้อ
-    }
+  document.getElementById('total-score').innerText = score;
+  document.getElementById('food-item').style.display = 'none';
+  document.getElementById('history-log').innerHTML = '';
+  document.getElementById('food-status-text').innerText = '';
+  
+  document.querySelectorAll('.btn-group button').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-0').classList.add('active');
+  
+  document.querySelectorAll('.food-btn').forEach(b => b.disabled = false);
+  document.getElementById('btn-scoop').disabled = true;
+  
+  generateOrder();
+}
+
+function setMode(mode) {
+  clearInterval(challengeTimer);
+  clearInterval(prepTimer);
+  
+  currentMode = mode;
+  canInteract = true;
+
+  document.getElementById('btn-mode-training').classList.remove('active');
+  document.getElementById('btn-mode-exam').classList.remove('active', 'exam-mode');
+  document.getElementById('btn-mode-challenge').classList.remove('active', 'challenge-mode');
+
+  let infoBox = document.getElementById('info-display');
+  let timerBox = document.getElementById('timer-display');
+
+  if (mode === 'training') {
+    document.getElementById('btn-mode-training').classList.add('active');
+    infoBox.style.display = 'block';
+    timerBox.style.display = 'none';
+    resetPot();
+  } 
+  else if (mode === 'exam') {
+    document.getElementById('btn-mode-exam').classList.add('active', 'exam-mode');
+    infoBox.style.display = 'none';
+    timerBox.style.display = 'none';
+    resetPot();
+  } 
+  else if (mode === 'challenge') {
+    document.getElementById('btn-mode-challenge').classList.add('active', 'challenge-mode');
+    infoBox.style.display = 'none';
+    timerBox.style.display = 'block';
+    resetPot();
+    startChallengeCountdown();
   }
+}
+
+function startChallengeCountdown() {
+  canInteract = false;
+  let countdown = 3;
+  let timerBox = document.getElementById('timer-display');
+  
+  timerBox.innerText = `เตรียมตัว... ${countdown}`;
+  timerBox.style.color = '#f39c12';
+
+  prepTimer = setInterval(() => {
+    countdown--;
+    if (countdown > 0) {
+      timerBox.innerText = `เตรียมตัว... ${countdown}`;
+    } else {
+      clearInterval(prepTimer);
+      canInteract = true;
+      timeRemaining = 90;
+      timerBox.innerText = `เวลาเหลือ: ${timeRemaining} วินาที`;
+      timerBox.style.color = '#e74c3c';
+
+      challengeTimer = setInterval(() => {
+        timeRemaining--;
+        timerBox.innerText = `เวลาเหลือ: ${timeRemaining} วินาที`;
+        
+        if (timeRemaining <= 0) {
+          clearInterval(challengeTimer);
+          canInteract = false;
+          timerBox.innerText = "หมดเวลาการแข่งขัน!";
+          alert(`หมดเวลา 90 วินาที!\nคุณทำคะแนนรวมได้ทั้งหมด: ${score} คะแนน`);
+        }
+      }, 1000);
+    }
+  }, 1000);
 }
 
 function generateOrder() {
@@ -203,13 +364,14 @@ function generateOrder() {
 }
 
 function setPower(v) {
+  if(!canInteract) return;
   power = v;
   document.querySelectorAll('.btn-group button').forEach(b => b.classList.remove('active'));
   document.getElementById('btn-' + v).classList.add('active');
 }
 
 function addFood(type, name) {
-  if (activeFood) return; 
+  if(!canInteract || activeFood) return; 
   activeFood = type;
   activeFoodName = name;
   foodInternalTemp = 32.0; 
@@ -217,8 +379,7 @@ function addFood(type, name) {
   document.querySelectorAll('.food-btn').forEach(b => b.disabled = true);
   document.getElementById('btn-scoop').disabled = false;
   
-  // ตรวจสอบสถานะโหมดประเมินก่อนเปิดกล่องแสดงอุณหภูมิแกนกลางเนื้อ
-  if (!isExamMode) {
+  if (currentMode === 'training') {
     document.getElementById('meat-temp-box').style.display = 'block';
   } else {
     document.getElementById('meat-temp-box').style.display = 'none';
@@ -304,7 +465,7 @@ function updateFoodVisuals() {
     }
   }
   
-  if(isExamMode) {
+  if(currentMode !== 'training') {
     document.getElementById('food-status-text').innerText = 'กำลังประเมินด้วยสายตา...';
   } else {
     document.getElementById('food-status-text').innerText = donenessLabel;
@@ -312,7 +473,7 @@ function updateFoodVisuals() {
 }
 
 function scoopUp() {
-  if (!activeFood) return;
+  if(!canInteract || !activeFood) return;
   
   let earned = 0;
   let logClass = '';
@@ -354,6 +515,7 @@ function scoopUp() {
   document.getElementById('food-item').style.display = 'none';
   document.getElementById('food-status-text').innerText = '';
   document.getElementById('meat-temp-box').style.display = 'none';
+  
   document.querySelectorAll('.food-btn').forEach(b => b.disabled = false);
   document.getElementById('btn-scoop').disabled = true;
   
