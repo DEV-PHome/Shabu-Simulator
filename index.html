@@ -205,13 +205,9 @@ h3 { margin-top: 0; color: #343a40; font-size: 1.1em; border-bottom: 2px solid #
 // Loading Screen & Preload Logic
 // =========================================
 const snarkySlogans = [
-  "May the fat be with you. (ขอไขมันจงสถิตอยู่กับท่าน)",
-  "Diet starts tomorrow... or maybe next year.",
+  "May the fat be with you.",
   "กำลังคำนวณแคลอรี่... เอ๊ะ ช่างมันเถอะ",
   "Warning: High cholesterol approaching.",
-  "ลวกหมูไม่สุก ระวังทรงหยอดน้ำเกลือ",
-  "อย่ามัวแต่ดูหน้าจอ ระวังเพื่อนแย่งเนื้อในหม้อของจริง",
-  "กินคาวไม่กินหวาน สันดานไพร่... แต่ถ้ากินชาบูไหม้ คือคนทำอาหารไม่เป็น"
 ];
 
 document.getElementById('loading-slogan').innerText = snarkySlogans[Math.floor(Math.random() * snarkySlogans.length)];
